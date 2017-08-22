@@ -4,8 +4,13 @@ pipeline {
     stages {
         stage('Retrive Secrets from Vault') { 
             steps { 
-                sh 'export DBUSER=$(curl -H "X-Vault-Token: 4f7ad37d-4215-849d-cebb-d50bec7f4818" -X GET  http://34.253.133.88:8200/v1/secret/dbaccess | jq -r .data.user)'
-                sh 'echo $DBUSER'
+               // sh 'export DBUSER=$(curl -H "X-Vault-Token: 4f7ad37d-4215-849d-cebb-d50bec7f4818" -X GET  http://34.253.133.88:8200/v1/secret/dbaccess | jq -r .data.user)'
+               sh 'echo $DBUSER'
+                def secrets = [
+                    [$class: 'VaultSecret', path: 'secret/dbaccess', secretValues: [
+                    [$class: 'VaultSecretValue', envVar: 'DBUSER', vaultKey: 'user']]]]
+
+                    sh 'echo $DBUSER'
             }
         }
         stage('Test'){
